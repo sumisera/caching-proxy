@@ -1,1 +1,2 @@
-//stores and retrieves cached responses
+const cache = new Map();
+module.exports = cache;
