@@ -21,10 +21,14 @@ if(clearCache) {
     //just to check its working later need to clear cache and exit program
     console.log('cache cleared');
 }
-if(port && origin) {
-    //another checker, later validate that port is a number
-    console.log(`port: ${port}\norigin: ${origin}`);
+else if(port && origin) {
+    if(Number.isInteger(Number(port))){ 
+        console.log(`starting...\nport: ${port}\norigin: ${origin}`);
+    }
+    else {
+        console.log(`Error: '${port}' is not a valid port number.`);
+    }
 }
 else {
-    console.log('Error: missing --port or --origin')
+    console.log('Error: missing --port or --origin');
 }
