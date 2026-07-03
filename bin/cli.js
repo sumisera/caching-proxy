@@ -13,6 +13,7 @@ function getArg(flag) {
     return null;
 }
 
+const {startServer} = require('../src/server')
 const port = getArg('--port');
 const origin = getArg('--origin');
 const clearCache = args.includes('--clear-cache');
@@ -23,7 +24,10 @@ if(clearCache) {
 }
 else if(port && origin) {
     if(Number.isInteger(Number(port))){ 
-        console.log(`starting...\nport: ${port}\norigin: ${origin}`);
+        startServer(port, (req, res) => {
+            console.log(req.method, req.url);
+            res.end("OK");
+        });
     }
     else {
         console.log(`Error: '${port}' is not a valid port number.`);
