@@ -14,6 +14,7 @@ function getArg(flag) {
 }
 
 const {startServer} = require('../src/server')
+const {forwardRequest} = require('../src/proxy')
 const port = getArg('--port');
 const origin = getArg('--origin');
 const clearCache = args.includes('--clear-cache');
@@ -24,9 +25,9 @@ if(clearCache) {
 }
 else if(port && origin) {
     if(Number.isInteger(Number(port))){ 
-        startServer(port, (req, res) => {
+        startServer(port, origin, (req, res,origin) => {
             console.log(req.method, req.url);
-            res.end("OK");
+            forwardRequest(req, res, origin)
         });
     }
     else {
