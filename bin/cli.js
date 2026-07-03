@@ -20,8 +20,10 @@ const origin = getArg('--origin');
 const clearCache = args.includes('--clear-cache');
 
 if(clearCache) {
-    //just to check its working later need to clear cache and exit program
-    console.log('cache cleared');
+    const cache = require("../src/cache");
+    cache.clear();
+    console.log("Cache cleared");
+    process.exit(0);
 }
 else if(port && origin) {
     if(Number.isInteger(Number(port))){ 
