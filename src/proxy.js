@@ -10,7 +10,9 @@ async function forwardRequest(req,res,origin) {
         res.statusCode = cached.status;
 
         for (const [k, v] of Object.entries(cached.headers)) {
-            res.setHeader(k, v);
+            if (k.toLowerCase() !== "content-encoding") {
+                res.setHeader(k, v);
+            }
         }
 
         res.setHeader("X-Cache", "HIT");
@@ -19,21 +21,33 @@ async function forwardRequest(req,res,origin) {
     const targetURL = origin + req.url
     const response = await fetch(targetURL, {
         method: req.method,
-        headers: req.headers
+        headers: {
+            ...req.headers,
+            "accept-encoding":"identity"
+        }
     });
 
     const body = await response.text();
+        const blockedHeaders = new Set([
+        "content-encoding",
+        "transfer-encoding",
+        "content-length"
+    ]);
+    
     cache.set(key, {
         status: response.status,
-        headers: Object.fromEntries(response.headers.entries()),
+        headers: Object.fromEntries(
+            [...response.headers].filter(([k]) => !blockedHeaders.has(k.toLowerCase()))),
         body
     });
 
-    res.setHeader("X-Cache", "MISS");
     res.statusCode = response.status;
-    
+    res.setHeader("X-Cache", "MISS");
+
     response.headers.forEach((value, key) => {
-        res.setHeader(key, value);
+        if (!blockedHeaders.has(key.toLowerCase())) {
+            res.setHeader(key, value);
+        }
     });
     res.end(body);
 }
